@@ -5,13 +5,15 @@ import { actionDeleteTodo } from "@/app/actionsAndDb";
 import useStore from "@/utils/store";
 import styles from "./spinner.module.css";
 import { useShallow } from "zustand/shallow";
+import { use } from "react";
 
 interface Props {
-  todos: Todo[];
+  todosPromise: Promise<Todo[]>;
 }
 
-export const TodoList: FC<Props> = ({ todos }) => {
+export const TodoList: FC<Props> = ({ todosPromise }) => {
   const { curTodo } = useStore((state) => state);
+  const todos = use(todosPromise);
   return (
     <>
       {todos.map((todo, idx) => {

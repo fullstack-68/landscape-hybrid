@@ -12,8 +12,9 @@ interface PageProps {
 export default function Home({ params, searchParams }: PageProps) {
   // const todos = await getTodos();
 
-  const todos = use(getTodos());
+  // const todos = use(getTodos());
 
+  const todosPromise = getTodos();
   return (
     <main className="container">
       <a href="/">
@@ -21,8 +22,8 @@ export default function Home({ params, searchParams }: PageProps) {
       </a>
 
       <FormInput />
-      <Suspense fallback={<div>Loading posts...</div>}>
-        <TodoList todos={todos} />
+      <Suspense fallback={<div>Loading Todos...</div>}>
+        <TodoList todosPromise={todosPromise} />
         {/* {JSON.stringify(todos)} */}
       </Suspense>
       <Spinner />

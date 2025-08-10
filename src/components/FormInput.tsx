@@ -1,8 +1,9 @@
 "use client";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { actionUpdateTodo, actionCreateTodo } from "@/app/actionsAndDb";
 import useStore from "@/utils/store";
 import { useShallow } from "zustand/shallow";
+import { useTransition } from "react"; // Optional: for loading states
 
 export const FormInput: FC = () => {
   const { mode } = useStore((state) => state);
@@ -62,27 +63,44 @@ const ButtonSubmit: FC<PropsButtonSubmit> = ({ setMessage }) => {
     ])
   );
 
-  const submit = actionCreateTodo.bind(null, inputText);
+  const [isPending, startTransition] = useTransition(); // Optional
+
   function handleClick() {
-    setPending(true);
-    submit()
-      .then((res) => {
-        setMessage(res.message);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setPending(false);
-        setInputText("");
-      });
+    startTransition(async () => {
+      // setPending(true);
+      try {
+        await actionCreateTodo(inputText);
+      } catch (e) {
+        console.log(e);
+      }
+      // setPending(false);
+      setInputText("");
+    });
+
+    // setPending(true);
+    // actionCreateTodo(inputText)
+    //   .then((res) => {
+    //     setMessage(res.message);
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   })
+    //   .finally(() => {
+    //     setPending(false);
+    //     setInputText("");
+    //   });
   }
 
+  useEffect(() => {
+    setPending(isPending);
+  }, [isPending]);
   if (mode !== "ADD") return <></>;
   return (
-    <button disabled={pending} onClick={handleClick}>
-      Submit
-    </button>
+    <>
+      <button disabled={pending} onClick={handleClick}>
+        Submit
+      </button>
+    </>
   );
 };
 
@@ -112,10 +130,9 @@ const ButtonUpdate: FC<PropsButtonUpdate> = ({ setMessage }) => {
     ])
   );
 
-  const submit = actionUpdateTodo.bind(null, curTodo.id, inputText);
   function handleClick() {
     setPending(true);
-    submit()
+    actionUpdateTodo(curTodo.id, inputText)
       .then((res) => {
         setMessage(res.message);
         if (res.message) return; // If there is err, stop here
