@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import { type FC } from "react";
 import { type Todo } from "@/app/actionsAndDb";
 import { actionDeleteTodo } from "@/app/actionsAndDb";
 import useStore from "@/utils/store";
@@ -43,14 +43,13 @@ export const TodoList: FC<Props> = ({ todosPromise }) => {
 };
 
 const ButtonDelete: FC<{ todo: Todo }> = ({ todo }) => {
-  const submit = actionDeleteTodo.bind(null, todo.id);
   const [mode, pending, setPending] = useStore(
     useShallow((state) => [state.mode, state.pending, state.setPending])
   );
 
   function handleClick() {
     setPending(true);
-    submit()
+    actionDeleteTodo(todo.id)
       .then((res) => {
         console.log(res);
       })
@@ -62,7 +61,7 @@ const ButtonDelete: FC<{ todo: Todo }> = ({ todo }) => {
       });
   }
 
-  if (mode === "EDIT") return <></>;
+  if (mode === "EDIT" || pending) return <></>;
   return (
     <div
       className={styles["custom-btn"]}
@@ -84,7 +83,9 @@ const ButtonUpdate: FC<{ todo: Todo }> = ({ todo }) => {
       state.setInputText,
     ])
   );
-  if (mode === "EDIT") return <></>;
+
+  if (mode === "EDIT" || pending) return <></>;
+
   return (
     <div
       className={styles["custom-btn"]}

@@ -20,11 +20,10 @@ export default function Home({ params, searchParams }: PageProps) {
       <a href="/">
         <h1>Todo (RSC + RCC)</h1>
       </a>
-
       <FormInput />
+
       <Suspense fallback={<div>Loading Todos...</div>}>
         <TodoList todosPromise={todosPromise} />
-        {/* {JSON.stringify(todos)} */}
       </Suspense>
       <Spinner />
     </main>

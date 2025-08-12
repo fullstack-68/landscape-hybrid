@@ -1,9 +1,9 @@
 "use client";
-import { FC, useEffect, useState } from "react";
+import { type FC, useEffect, useState } from "react";
 import { actionUpdateTodo, actionCreateTodo } from "@/app/actionsAndDb";
 import useStore from "@/utils/store";
 import { useShallow } from "zustand/shallow";
-import { useTransition } from "react"; // Optional: for loading states
+import { useTransition } from "react";
 
 export const FormInput: FC = () => {
   const { mode } = useStore((state) => state);
@@ -63,37 +63,24 @@ const ButtonSubmit: FC<PropsButtonSubmit> = ({ setMessage }) => {
     ])
   );
 
-  const [isPending, startTransition] = useTransition(); // Optional
+  const [isPendingLocal, startTransition] = useTransition();
+
+  useEffect(() => {
+    setPending(isPendingLocal);
+  }, [isPendingLocal]);
 
   function handleClick() {
     startTransition(async () => {
-      // setPending(true);
       try {
-        await actionCreateTodo(inputText);
-      } catch (e) {
-        console.log(e);
+        const res = await actionCreateTodo(inputText);
+        setMessage(res.message);
+      } catch (err) {
+        console.log(err);
       }
-      // setPending(false);
       setInputText("");
     });
-
-    // setPending(true);
-    // actionCreateTodo(inputText)
-    //   .then((res) => {
-    //     setMessage(res.message);
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   })
-    //   .finally(() => {
-    //     setPending(false);
-    //     setInputText("");
-    //   });
   }
 
-  useEffect(() => {
-    setPending(isPending);
-  }, [isPending]);
   if (mode !== "ADD") return <></>;
   return (
     <>
@@ -130,22 +117,41 @@ const ButtonUpdate: FC<PropsButtonUpdate> = ({ setMessage }) => {
     ])
   );
 
+  const [isPendingLocal, startTransition] = useTransition();
+
+  useEffect(() => {
+    setPending(isPendingLocal);
+  }, [isPendingLocal]);
+
   function handleClick() {
-    setPending(true);
-    actionUpdateTodo(curTodo.id, inputText)
-      .then((res) => {
+    startTransition(async () => {
+      try {
+        const res = await actionUpdateTodo(curTodo.id, inputText);
         setMessage(res.message);
         if (res.message) return; // If there is err, stop here
         setMode("ADD");
         setCurTodo({ id: "", todoText: "" });
         setInputText("");
-      })
-      .catch((err) => {
+      } catch (err) {
         console.log(err);
-      })
-      .finally(() => {
-        setPending(false);
-      });
+      }
+    });
+
+    // setPending(true);
+    // actionUpdateTodo(curTodo.id, inputText)
+    //   .then((res) => {
+    //     setMessage(res.message);
+    //     if (res.message) return; // If there is err, stop here
+    //     setMode("ADD");
+    //     setCurTodo({ id: "", todoText: "" });
+    //     setInputText("");
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //   })
+    //   .finally(() => {
+    //     setPending(false);
+    //   });
   }
 
   if (mode !== "EDIT") return <></>;
