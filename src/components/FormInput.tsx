@@ -136,22 +136,6 @@ const ButtonUpdate: FC<PropsButtonUpdate> = ({ setMessage }) => {
         console.log(err);
       }
     });
-
-    // setPending(true);
-    // actionUpdateTodo(curTodo.id, inputText)
-    //   .then((res) => {
-    //     setMessage(res.message);
-    //     if (res.message) return; // If there is err, stop here
-    //     setMode("ADD");
-    //     setCurTodo({ id: "", todoText: "" });
-    //     setInputText("");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   })
-    //   .finally(() => {
-    //     setPending(false);
-    //   });
   }
 
   if (mode !== "EDIT") return <></>;

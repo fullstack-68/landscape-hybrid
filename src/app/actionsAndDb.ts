@@ -46,7 +46,7 @@ export async function actionDeleteTodo(curId: string) {
 // * DB Functionality
 // I need to include this with server-action function so that I don't get multiple copies of todos arrays.
 // This inclusion would not be necessary when I use real database.
-const DB_LATENCY = 3000; // ms
+const DB_LATENCY = 1000; // ms
 
 let todos = [
   {
